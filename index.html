@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stuff</title>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
+    <link href="./src/output.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="bg-sky-500 border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-2.5">
+            <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img src="src/ahmadlogo__1_-removebg.png" class="h-20" alt="Flowbite Logo" />
+                <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+                    Stuff Management</span>
+            </a>
+            <button data-collapse-toggle="navbar-dropdown" type="button"
+                class="inline-flex items-center p-2 ms-3 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                aria-controls="navbar-dropdown" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 17 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M1 1h15M1 7h15M1 13h15" />
+                </svg>
+            </button>
+            <div class="hidden w-full md:block md:w-auto" id="navbar-dropdown">
+                <ul
+                    class="flex flex-col font-medium p-4 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:mt-0 md:text-sm  md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 md:space-x-8 md:rtl:space-x-reverse">
+                    <li>
+                        <a href="dashboard.html"
+                            class="block py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Home</a>
+                    </li>
+                    <li>
+                        <a href="index.html"
+                            class="block py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Stuff</a>
+                    </li>
+                    <li>
+                        <a href="category.html"
+                            class="block py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Category</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div>
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 bg-sky-100">
+            <input type="text" placeholder="Name of stuff" id="name">
+            <input type="number" id="price" placeholder="Price of stuff">
+            <select id="category">
+                <option value="Furniture">Furniture</option>
+                <option value="Electronic">Electronic</option>
+            </select>
+            <button type="button"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                id="trigger" onclick="SaveStuff()">Save</button>
+        </div>
+
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            No
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Product Name
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Category
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Price
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="result">
+                    <tr>
+                        <td colspan="5" align="center">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const UpdateStuff = async (id) => {
+            const nameVal = document.getElementById('name').value;
+            const priceVal = document.getElementById('price').value;
+            const categoryVal = document.getElementById('category').value;
+            await axios.patch(`http://localhost:3000/stuff/${id}`, {
+                name: nameVal,
+                price: priceVal,
+                category: categoryVal,
+            })
+                .then((response) => {
+                    console.log(response);
+                    document.getElementById('name').value = '';
+                    document.getElementById('price').value = '';
+                    document.getElementById('trigger').innerText = "Save";
+                    document.getElementById('trigger').setAttribute('onclick', `SaveStuff()`)
+                    alert('Berhasil Diupdate')
+                    GetStuff();
+                })
+                .catch((error) => {
+                    alert('Maaf Kami Belum Di Bayar');
+                })
+        }
+
+        const EditStuff = async (id) => {
+            await axios.get(`http://localhost:3000/stuff/${id}`)
+                .then((response) => {
+                    console.log(response.data);
+                    const stuff = response.data;
+                    document.getElementById('name').value = stuff.name;
+                    document.getElementById('price').value = stuff.price;
+                    document.getElementById('category').value = stuff.category;
+                    document.getElementById('trigger').innerText = "Update";
+                    document.getElementById('trigger').setAttribute('onclick', `UpdateStuff('${id}')`)
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+
+        const GetStuff = async () => {
+            await axios.get('http://localhost:3000/stuff')
+                .then((response) => {
+                    console.log(response);
+                    const stuffs = response.data;
+                    let bucket = "";
+                    stuffs.forEach((stuff, index) => {
+                        bucket += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${stuff.name}</td>
+                        <td>${stuff.category}</td>
+                        <td>$${stuff.price}</td>
+                        <td>
+                            <button onclick="EditStuff('${stuff.id}')" type="button">Edit</button>
+                            <button onclick="DeleteStuff('${stuff.id}')" type="button">Delete</button>
+                        </td>
+                    </tr>
+                    `
+                    });
+                    document.getElementById('result').innerHTML = bucket;
+
+                })
+                .catch((error) => {
+                    alert('Maaf Kami Belum Di Bayar');
+                })
+        }
+        GetStuff();
+
+        const DeleteStuff = async (id) => {
+            const confirmed = confirm('Apakah ini akan dihapus?');
+            if (confirmed) {
+                await axios.delete(`http://localhost:3000/stuff/${id}`)
+                    .then((response) => {
+                        console.log(response);
+                        GetStuff();
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            }
+        }
+
+        const SaveStuff = async () => {
+            const nameVal = document.getElementById('name').value;
+            const priceVal = document.getElementById('price').value;
+            const categoryVal = document.getElementById('category').value;
+
+            await axios.post('http://localhost:3000/stuff', {
+                name: nameVal,
+                price: priceVal,
+                category: categoryVal,
+            })
+                .then((response) => {
+                    console.log(response);
+                    alert('Berhasil disimpan')
+                    GetStuff();
+                })
+                .catch((error) => {
+                    alert('Maaf Kami Belum Di Bayar');
+                })
+
+        }
+
+        const GetCategory = async () => {
+            await axios
+                .get("http://localhost:3000/category")
+                .then((response) => {
+                    console.log(response);
+                    const categories = response.data;
+                    let bucket = "";
+                    categories.forEach((category, index) => {
+                        bucket += `<option value="${category.name}">${category.name}</option>`;
+                    });
+                    document.getElementById("category").innerHTML = bucket;
+                })
+                .catch((error) => {
+                    alert("Maaf Kami Belum Di Bayar");
+                });
+        };
+        GetCategory();
+    </script>
+</body>
+
+</html>
